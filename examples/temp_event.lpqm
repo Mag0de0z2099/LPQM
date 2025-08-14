@@ -1,0 +1,20 @@
+// Estado inicial: onda
+estado = "onda"
+entorno = { impacto: 0.10, restricción: 0.30 }
+ruido   = { amortiguación: 0.40, estímulo: 0.20 }
+
+// Evento: colapsar si temperatura > 0.65
+evento_colapso: temperatura > 0.65
+
+// Evento: dispersar si temperatura < 0.35
+evento_dispersion: temperatura < 0.35
+
+// Simulación con temperatura inicial baja que sube con el tiempo
+ciclos = 30
+temperatura = 0.20
+
+for i en 1..ciclos {
+    →P_evento(0.50, ruido, entorno, evento_colapso, temperatura)
+    →W_evento(0.60, ruido, entorno, evento_dispersion, temperatura)
+    temperatura += 0.03
+}
