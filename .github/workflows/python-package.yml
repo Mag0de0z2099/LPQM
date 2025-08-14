@@ -17,29 +17,29 @@ jobs:
         python-version: ["3.10", "3.11", "3.12"]
 
     steps:
-      - name: Clonar repositorio
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configurar Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Instalar dependencias (si existen)
+      - name: Install deps (if any)
         shell: bash
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Crear carpeta de logs
+      - name: Make logs dir
         shell: bash
         run: mkdir -p logs
 
-      # ---- Prueba de humo del simulador (rápida, sin ASCII) ----
-      - name: Ejecutar simulador (smoke test)
+      # --- Smoke test del simulador (sin ASCII) ---
+      - name: Run simulator (smoke)
         shell: bash
         run: |
-          python "simulación/simulator.py" \
+          python "sim/simulator.py" \
             --cycles 8 --delay 0.01 \
             --probP 0.50 --probW 0.60 \
             --impacto 0.10 --restriccion 0.30 \
@@ -48,35 +48,20 @@ jobs:
             --no-ascii \
             | tee "logs/simulator_${{ matrix.os }}_${{ matrix.python-version }}.log"
 
-      # ---- Ejecutar ejemplos si existen (no falla si faltan) ----
-      - name: Ejecutar ejemplo: run_simple_collapse.py (si existe)
+      # --- Ejecutar ejemplos si existen (no falla si faltan) ---
+      - name: Run examples (if present)
         shell: bash
         run: |
-          if [ -f "ejemplos/run_simple_collapse.py" ]; then
-            python "ejemplos/run_simple_collapse.py" | tee -a "logs/examples_${{ matrix.os }}_${{ matrix.python-version }}.log"
-          else
-            echo "ejemplos/run_simple_collapse.py no encontrado, se omite."
-          fi
+          for f in ejemplos/run_simple_collapse.py ejemplos/run_temp_event.py ejemplos/run_alternating_pulse.py; do
+            if [ -f "$f" ]; then
+              echo "Running $f"
+              python "$f" | tee -a "logs/examples_${{ matrix.os }}_${{ matrix.python-version }}.log"
+            else
+              echo "$f not found, skipping."
+            fi
+          done
 
-      - name: Ejecutar ejemplo: run_temp_event.py (si existe)
-        shell: bash
-        run: |
-          if [ -f "ejemplos/run_temp_event.py" ]; then
-            python "ejemplos/run_temp_event.py" | tee -a "logs/examples_${{ matrix.os }}_${{ matrix.python-version }}.log"
-          else
-            echo "ejemplos/run_temp_event.py no encontrado, se omite."
-          fi
-
-      - name: Ejecutar ejemplo: run_alternating_pulse.py (si existe)
-        shell: bash
-        run: |
-          if [ -f "ejemplos/run_alternating_pulse.py" ]; then
-            python "ejemplos/run_alternating_pulse.py" | tee -a "logs/examples_${{ matrix.os }}_${{ matrix.python-version }}.log"
-          else
-            echo "ejemplos/run_alternating_pulse.py no encontrado, se omite."
-          fi
-
-      - name: Subir artefactos (logs)
+      - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
