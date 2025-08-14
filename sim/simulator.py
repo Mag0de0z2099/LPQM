@@ -96,7 +96,6 @@ def main(argv=None):
 
     print("Estado final:", estado.valor)
 
-if __name__ == "__main__":
-    
+    if __name__ == "__main__":
     sys.exit(main())
-python3 simulator.py --cycles 30 --delay 0.1 --temp-start 0.2 --temp-step 0.04
+
