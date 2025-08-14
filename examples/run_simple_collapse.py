@@ -16,5 +16,14 @@ cmd = [
     "--estimulo", "0.20",
     "--temp-start", "0.20",
     "--temp-step", "0",
+    "--no-ascii",
 ]
-subprocess.run(cmd, check=True)
+
+result = subprocess.run(cmd, capture_output=True, text=True)
+
+print("---- STDOUT ----")
+print(result.stdout)
+print("---- STDERR ----")
+print(result.stderr)
+print(f"Exit code: {result.returncode}")
+
