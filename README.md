@@ -23,5 +23,5 @@ Mira [`ROADMAP.md`](ROADMAP.md).
 Lee [`CONTRIBUTING.md`](CONTRIBUTING.md) y abre un issue con propuesta. Etiquetas útiles: `idea`, `spec`, `sim`, `good first issue`.
 
 ## Licencia
-MIT (ver `LICENSE`).
+Apache 2.0 (ver `LICENSE`).
 
