@@ -24,3 +24,12 @@ Lee [`CONTRIBUTING.md`](CONTRIBUTING.md) y abre un issue con propuesta. Etiqueta
 ## Licencia
 Apache 2.0 (ver `LICENSE`).
 
+### v0.2.0
+- Colapso/Dispersión **condicionados por eventos** (`op_P_evento`, `op_W_evento`).
+- Visualización ASCII simple para observar el estado.
+- Parámetros por CLI (ciclos, delay, ruido/entorno, temperatura simulada).
+
+**Ejemplo:**
+```bash
+cd sim
+python3 simulator.py --cycles 30 --delay 0.1 --temp-start 0.2 --temp-step 0.04
