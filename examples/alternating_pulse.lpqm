@@ -1,0 +1,13 @@
+estado = "onda"
+entorno = { impacto: 0.10, restricción: 0.30 }
+ruido   = { amortiguación: 0.20, estímulo: 0.20 }
+
+ciclos = 10
+
+for i en 1..ciclos {
+    if (i % 2 == 0) {
+        →P(0.90, ruido, entorno) // alta probabilidad de colapso
+    } else {
+        →W(0.90, ruido, entorno) // alta probabilidad de dispersión
+    }
+}
