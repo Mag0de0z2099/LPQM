@@ -100,7 +100,3 @@ if __name__ == "__main__":
     
     sys.exit(main())
 python3 simulator.py --cycles 30 --delay 0.1 --temp-start 0.2 --temp-step 0.04
-
---impacto 0.2 --amortiguacion 0.2
---estimulo 0.4 --restriccion 0.1
---no-ascii
