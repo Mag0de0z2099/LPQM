@@ -69,3 +69,73 @@ jobs:
           path: logs/**
           if-no-files-found: warn
           retention-days: 7
+
+name: LPQM - CI (simulador y ejemplos)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    name: ${{ matrix.os }} • Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install deps (if any)
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Make logs dir
+        shell: bash
+        run: mkdir -p logs
+
+      - name: Run simulator (smoke)
+        shell: bash
+        run: |
+          python "sim/simulator.py" \
+            --cycles 8 --delay 0.01 \
+            --probP 0.50 --probW 0.60 \
+            --impacto 0.10 --restriccion 0.30 \
+            --amortiguacion 0.40 --estimulo 0.20 \
+            --temp-start 0.20 --temp-step 0 \
+            --no-ascii \
+            | tee "logs/simulator_${{ matrix.os }}_${{ matrix.python-version }}.log"
+
+      - name: Run examples (if present)
+        shell: bash
+        run: |
+          for f in examples/run_simple_collapse.py examples/run_temp_event.py examples/run_alternating_pulse.py; do
+            if [ -f "$f" ]; then
+              echo "Running $f"
+              python "$f" | tee -a "logs/examples_${{ matrix.os }}_${{ matrix.python-version }}.log"
+            else
+              echo "$f not found, skipping."
+            fi
+          done
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs_${{ matrix.os }}_${{ matrix.python-version }}
+          path: logs/**
+          if-no-files-found: warn
+          retention-days: 7
