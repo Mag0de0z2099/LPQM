@@ -1,0 +1,10 @@
+// Estado inicial: onda
+estado = "onda"
+entorno = { impacto: 0.10, restricción: 0.30 }
+ruido   = { amortiguación: 0.40, estímulo: 0.20 }
+
+// Intentar colapso a partícula
+→P(0.50, ruido, entorno)
+
+// Intentar dispersión a onda
+→W(0.60, ruido, entorno)
