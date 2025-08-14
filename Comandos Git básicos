@@ -1,0 +1,6 @@
+git init
+git add .
+git commit -m "feat: LPQM v0.1 prototipo (→P/→W, simulador, docs)"
+git branch -M main
+git remote add origin https://github.com/tu-usuario/LPQM.git
+git push -u origin main
