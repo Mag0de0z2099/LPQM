@@ -2,13 +2,13 @@ name: LPQM - CI (simulador y ejemplos)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   test:
-    name: ${{ matrix.os }} • Python ${{ matrix.python-version }}
+    name: ${{ matrix.os }} • Py ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -25,6 +25,14 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Install deps (if any)
         shell: bash
         run: |
@@ -35,6 +43,7 @@ jobs:
         shell: bash
         run: mkdir -p logs
 
+      # ——— Smoke test: ejecuta el simulador rápido, sin ASCII ———
       - name: Run simulator (smoke)
         shell: bash
         run: |
@@ -47,6 +56,7 @@ jobs:
             --no-ascii \
             | tee "logs/simulator_${{ matrix.os }}_${{ matrix.python-version }}.log"
 
+      # ——— Ejecuta ejemplos si existen (no falla si no están) ———
       - name: Run examples (if present)
         shell: bash
         run: |
