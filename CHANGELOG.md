@@ -33,3 +33,15 @@ Sirve como punto de partida para exploración y desarrollo colaborativo.
 ### Notas
 Esta versión marca el inicio de un simulador más flexible, con soporte de eventos y control completo desde la terminal.  
 La visualización ASCII es opcional (`--no-ascii`) y puede ser el paso previo a la visualización avanzada planificada para v0.3.0.
+
+### Ejemplos añadidos
+Se incorporaron tres archivos de ejemplo en la carpeta `examples/` para facilitar el aprendizaje y las primeras pruebas de LPQM:
+
+1. **simple_collapse.lpqm**  
+   Ejemplo básico de colapso y dispersión sin condiciones externas.
+
+2. **temp_event.lpqm**  
+   Ejemplo que utiliza condiciones de temperatura para activar `→P_evento` y `→W_evento`.
+
+3. **alternating_pulse.lpqm**  
+   Ejemplo creativo que alterna estados onda ↔ partícula de forma controlada, útil para pruebas rápidas.
