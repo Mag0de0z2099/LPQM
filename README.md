@@ -33,3 +33,16 @@ Apache 2.0 (ver `LICENSE`).
 ```bash
 cd sim
 python3 simulator.py --cycles 30 --delay 0.1 --temp-start 0.2 --temp-step 0.04
+
+### ▶️ Scripts de ejemplo (Windows/Linux/Mac)
+En `examples/` hay tres scripts Python que ejecutan el simulador con configuraciones listas:
+
+- `run_simple_collapse.py` — Prueba corta sin eventos.
+- `run_temp_event.py` — Eventos de temperatura (temp sube por ciclo).
+- `run_alternating_pulse.py` — Pulso alternante con probabilidades altas.
+
+**Cómo correrlos** (desde la raíz del repo):
+```bash
+python examples/run_simple_collapse.py
+python examples/run_temp_event.py
+python examples/run_alternating_pulse.py
