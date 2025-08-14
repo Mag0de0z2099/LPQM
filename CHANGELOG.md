@@ -14,7 +14,7 @@
 Esta es la primera versión pública del prototipo LPQM.  
 Sirve como punto de partida para exploración y desarrollo colaborativo.
 
-📄 **Ver diagrama**: [`docs/wave_particle_flowchart.png`](docs/wave_particle_flowchart.png)
+📄 **Ver diagrama**: [https://github.com/Mag0de0z2099/LPQM/releases/tag/v0.1.0)
 
 ## v0.2.0 — 14/08/2025
 
