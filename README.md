@@ -5,8 +5,7 @@ LPQM — Lenguaje de Proyección Cuántica Multidireccional Prototipo de un leng
 **Estado:** v0.1.0 (exploratorio)  
 **Idea central:** modelar **vibras/ondas ↔ partículas** con operadores de transición probabilísticos que incorporan ruido y entorno.
 
-![Diagrama](docs/wave_particle_flowchart.png)
-
+![Diagrama]https://github.com/Mag0de0z2099/LPQM/releases/tag/v0.1.0
 ## ¿Por qué?
 LPQM explora una DSL donde la **incertidumbre** es una característica del lenguaje, no una excepción. Los operadores `→P` (onda→partícula) y `→W` (partícula→onda) permiten simular colapsos y recomposición bajo parámetros de **probabilidad, ruido y entorno**.
 
