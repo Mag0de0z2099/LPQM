@@ -15,3 +15,21 @@ Esta es la primera versión pública del prototipo LPQM.
 Sirve como punto de partida para exploración y desarrollo colaborativo.
 
 📄 **Ver diagrama**: [`docs/wave_particle_flowchart.png`](docs/wave_particle_flowchart.png)
+
+## v0.2.0 — 14/08/2025
+
+### Mejoras
+- Añadidos operadores condicionados por eventos:
+  - `op_P_evento` (colapso →P activado por condición externa).
+  - `op_W_evento` (dispersión →W activada por condición externa).
+- Incorporada visualización ASCII simple para observar el estado en tiempo real.
+- Soporte de parámetros por línea de comandos para:
+  - Probabilidades (`--probP`, `--probW`).
+  - Factores de ruido y entorno (`--amortiguacion`, `--estimulo`, `--impacto`, `--restriccion`).
+  - Temperatura simulada (`--temp-start`, `--temp-step`) como disparador de eventos.
+  - Número de ciclos (`--cycles`) y retardo (`--delay`).
+- Registro de eventos con timestamp para trazabilidad.
+
+### Notas
+Esta versión marca el inicio de un simulador más flexible, con soporte de eventos y control completo desde la terminal.  
+La visualización ASCII es opcional (`--no-ascii`) y puede ser el paso previo a la visualización avanzada planificada para v0.3.0.
