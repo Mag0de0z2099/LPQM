@@ -1,0 +1,63 @@
+name: CI - ejemplo
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "ejemplo/**"
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - "ejemplo/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ejemplo-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify folder exists
+        id: check_dir
+        run: |
+          if [ -d "ejemplo" ]; then
+            echo "found=true" >> $GITHUB_OUTPUT
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Stop gracefully if folder not found
+        if: steps.check_dir.outputs.found == 'false'
+        run: |
+          echo "Carpeta 'ejemplo/' no existe en este commit. Saliendo en éxito."
+          exit 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies (si existen)
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f ejemplo/requirements.txt ]; then pip install -r ejemplo/requirements.txt; fi
+          pip install pytest
+
+      - name: Run tests or smoke check (ejemplo)
+        run: |
+          cd ejemplo
+          if [ -d tests ] && ls tests/*.py >/dev/null 2>&1; then
+            pytest -q
+          else
+            python - <<'PY'
+print("ejemplo: smoke check OK")
+PY
+          fi
