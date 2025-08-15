@@ -8,7 +8,6 @@ on:
       - 'setup.cfg'
       - 'setup.py'
       - 'requirements*.txt'
-      - '.github/workflows/python-package.yml'
   pull_request:
     branches: [ "main" ]
     paths:
@@ -16,7 +15,6 @@ on:
       - 'setup.cfg'
       - 'setup.py'
       - 'requirements*.txt'
-      - '.github/workflows/python-package.yml'
 
 permissions:
   contents: read
@@ -36,7 +34,7 @@ jobs:
           if ls requirements*.txt >/dev/null 2>&1; then pip install -r requirements.txt || true; fi
           pip install pytest || true
 
-      - name: Tests or smoke
+      - name: Tests o smoke
         run: |
           if [ -d tests ] && ls tests/*.py >/dev/null 2>&1; then
             pytest -q || true
