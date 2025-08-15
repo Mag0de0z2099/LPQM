@@ -3,15 +3,13 @@ name: examples CI
 on:
   push:
     branches: [ "main" ]
+    paths: [ "examples/**" ]
   pull_request:
     branches: [ "main" ]
+    paths: [ "examples/**" ]
 
 permissions:
   contents: read
-
-concurrency:
-  group: examples-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   build:
@@ -19,43 +17,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Detecta si hubo cambios en examples/
-      - name: Detect examples/ changes
-        id: changes
-        run: |
-          BEFORE="${{ github.event.before }}"
-          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
-            BEFORE=$(git rev-list --max-parents=0 HEAD | tail -n 1)
-          fi
-          CHANGED=$(git diff --name-only "$BEFORE" "$GITHUB_SHA" || true)
-          echo "Archivos cambiados:"
-          echo "$CHANGED"
-          echo "$CHANGED" | grep -E '^examples/' >/dev/null 2>&1 \
-            && echo "changed=true" >> $GITHUB_OUTPUT \
-            || echo "changed=false" >> $GITHUB_OUTPUT
-
-      - name: Skip if no examples/ changes
-        if: steps.changes.outputs.changed == 'false'
-        run: |
-          echo "Sin cambios en examples/. Saliendo OK."
-          exit 0
-
-      - name: Guard clause (folder)
-        run: |
-          if [ ! -d "examples" ]; then
-            echo "No existe examples/ en este commit. OK."
-            exit 0
-          fi
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
       - name: Install deps (tolerante)
         run: |
           python -m pip install --upgrade pip || true
-          if [ -f requirements.txt ]; then pip install -r requirements.txt || true; fi
           if [ -f examples/requirements.txt ]; then pip install -r examples/requirements.txt || true; fi
           pip install pytest || true
 
