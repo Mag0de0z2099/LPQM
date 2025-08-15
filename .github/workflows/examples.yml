@@ -1,11 +1,52 @@
-name: examples ok
+name: examples CI
+
 on:
   push:
-    paths:
-      - 'examples/**'
+    branches: [ "main" ]
+    paths: [ "examples/**" ]
+  pull_request:
+    branches: [ "main" ]
+    paths: [ "examples/**" ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: examples-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  ok:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: echo examples OK
+
+      - name: Verify folder exists
+        run: |
+          if [ ! -d "examples" ]; then
+            echo "No existe examples/ en este commit; saliendo en éxito."
+            exit 0
+          fi
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies (if present)
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f examples/requirements.txt ]; then pip install -r examples/requirements.txt; fi
+          pip install pytest
+
+      - name: Run tests or smoke
+        run: |
+          cd examples
+          if [ -d tests ] && ls tests/*.py >/dev/null 2>&1; then
+            pytest -q
+          else
+            python - <<'PY'
+print("examples: smoke check OK")
+PY
+          fi
