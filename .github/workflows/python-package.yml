@@ -3,18 +3,8 @@ name: Python package
 on:
   push:
     branches: [ "main" ]
-    paths:
-      - 'pyproject.toml'
-      - 'setup.cfg'
-      - 'setup.py'
-      - 'requirements*.txt'
   pull_request:
     branches: [ "main" ]
-    paths:
-      - 'pyproject.toml'
-      - 'setup.cfg'
-      - 'setup.py'
-      - 'requirements*.txt'
 
 permissions:
   contents: read
@@ -24,6 +14,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Solo correr si cambian archivos de empaquetado
+      - name: Detect packaging changes
+        id: changes
+        shell: bash
+        run: |
+          BEFORE="${{ github.event.before }}"
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            BEFORE=$(git rev-list --max-parents=0 HEAD | tail -n 1)
+          fi
+          CHANGED=$(git diff --name-only "$BEFORE" "$GITHUB_SHA" || true)
+          echo "Changed files:"
+          echo "$CHANGED"
+          if echo "$CHANGED" | grep -E '^(pyproject\.toml|setup\.cfg|setup\.py|requirements[^/]*\.txt)$' >/dev/null 2>&1; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Skip (no packaging changes)
+        if: steps.changes.outputs.changed == 'false'
+        run: |
+          echo "Sin cambios de empaquetado. Saliendo OK."
+          exit 0
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -34,7 +51,7 @@ jobs:
           if ls requirements*.txt >/dev/null 2>&1; then pip install -r requirements.txt || true; fi
           pip install pytest || true
 
-      - name: Tests o smoke
+      - name: Tests or smoke
         run: |
           if [ -d tests ] && ls tests/*.py >/dev/null 2>&1; then
             pytest -q || true
