@@ -1,0 +1,35 @@
+name: CI - ejemplo (smoke)
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "ejemplo/**"
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - "ejemplo/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ejemplo-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify folder exists or exit OK
+        run: |
+          if [ ! -d "ejemplo" ]; then
+            echo "No existe ejemplo/ en este commit; saliendo en éxito."
+            exit 0
+          fi
+
+      - name: Smoke OK
+        run: echo "ejemplo: OK"
