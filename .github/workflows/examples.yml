@@ -1,0 +1,11 @@
+name: examples ok
+on:
+  push:
+    paths:
+      - 'examples/**'
+jobs:
+  ok:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo examples OK
