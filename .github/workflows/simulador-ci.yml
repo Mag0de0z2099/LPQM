@@ -1,5 +1,4 @@
 name: CI - simulador
-
 on:
   push:
     branches: [ "main" ]
@@ -18,10 +17,9 @@ concurrency:
 jobs:
   build-test:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout
-    - uses: actions/checkout@v4
+      uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -36,11 +34,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
 
-    - name: Install dependencies (root if exists)
+    - name: Install dependencies (root/simulador si existen)
       run: |
+        python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         if [ -f simulador/requirements.txt ]; then pip install -r simulador/requirements.txt; fi
-        python -m pip install --upgrade pip
         pip install pytest
 
     - name: Run tests or smoke check (simulador)
