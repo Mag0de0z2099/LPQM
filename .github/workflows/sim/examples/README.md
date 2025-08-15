@@ -1,1 +1,1 @@
-“prueba example"
+“prueba examples”
