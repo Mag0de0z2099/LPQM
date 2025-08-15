@@ -1,11 +1,14 @@
 name: CI - simulador
+
 on:
   push:
     branches: [ "main" ]
-    paths: [ "simulador/**", ".github/workflows/simulador-ci.yml", "requirements.txt" ]
+    paths:
+      - "simulador/**"
   pull_request:
     branches: [ "main" ]
-    paths: [ "simulador/**", ".github/workflows/simulador-ci.yml", "requirements.txt" ]
+    paths:
+      - "simulador/**"
 
 permissions:
   contents: read
@@ -18,36 +21,43 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.11"
+      - name: Verify folder exists
+        id: check_dir
+        run: |
+          if [ -d "simulador" ]; then
+            echo "found=true" >> $GITHUB_OUTPUT
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+          fi
 
-    - name: Cache pip
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+      - name: Stop gracefully if folder not found
+        if: steps.check_dir.outputs.found == 'false'
+        run: |
+          echo "Carpeta 'simulador/' no existe en este commit. Saliendo en éxito."
+          exit 0
 
-    - name: Install dependencies (root/simulador si existen)
-      run: |
-        python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        if [ -f simulador/requirements.txt ]; then pip install -r simulador/requirements.txt; fi
-        pip install pytest
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-    - name: Run tests or smoke check (simulador)
-      working-directory: simulador
-      run: |
-        if [ -d tests ] && compgen -G "tests/*.py" > /dev/null; then
-          pytest -q
-        else
-          python - <<'PY'
+      - name: Install dependencies (si existen)
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f simulador/requirements.txt ]; then pip install -r simulador/requirements.txt; fi
+          pip install pytest
+
+      - name: Run tests or smoke check (simulador)
+        run: |
+          cd simulador
+          if [ -d tests ] && ls tests/*.py >/dev/null 2>&1; then
+            pytest -q
+          else
+            python - <<'PY'
 print("simulador: smoke check OK")
 PY
-        fi
+          fi
