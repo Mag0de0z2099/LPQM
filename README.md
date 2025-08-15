@@ -1,4 +1,5 @@
 # LPQM - Lenguaje de Proyección Cuántica Multidireccional
+[![Python package](https://github.com/Mag0de0z2099/LPQM/actions/workflows/python-package.yml/badge.svg)](https://github.com/Mag0de0z2099/LPQM/actions/workflows/python-package.yml)
 
 # LPQM
 LPQM — Lenguaje de Proyección Cuántica Multidireccional Prototipo de un lenguaje experimental inspirado en la mecánica cuántica.
