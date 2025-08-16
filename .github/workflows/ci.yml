@@ -1,0 +1,117 @@
+name: CI
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            pip-${{ runner.os }}-${{ matrix.python-version }}-
+
+      - name: Install dependencies (if any)
+        run: |
+          set -e
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+          # Herramientas útiles si existen tests
+          pip install --upgrade pip
+          python -m pip install pytest >/dev/null 2>&1 || true
+
+      - name: Build package (if pyproject exists)
+        if: ${{ hashFiles('pyproject.toml') != '' }}
+        run: |
+          pip install build
+          python -m build
+
+      # --- TESTS (si existen) ---
+      - name: Run tests with pytest
+        if: ${{ hashFiles('tests/**', '**/test_*.py', '**/*_test.py') != '' }}
+        run: |
+          pytest -q
+
+      # --- LINT opcional (solo si hay config) ---
+      - name: Lint with flake8 (if configured)
+        if: ${{ hashFiles('.flake8', 'setup.cfg', 'tox.ini', 'pyproject.toml') != '' }}
+        run: |
+          python - <<'PY'
+          import configparser, pathlib, sys
+          has_cfg = any(pathlib.Path(p).exists() for p in ('.flake8','setup.cfg','tox.ini','pyproject.toml'))
+          if has_cfg:
+              import subprocess
+              try:
+                  subprocess.check_call([sys.executable, "-m", "pip", "install", "flake8"])
+                  subprocess.check_call([sys.executable, "-m", "flake8", "."])
+              except subprocess.CalledProcessError as e:
+                  sys.exit(e.returncode)
+          PY
+
+      # --- SMOKE RUN si NO hay tests ---
+      - name: Smoke run (no tests found)
+        if: ${{ hashFiles('tests/**', '**/test_*.py', '**/*_test.py') == '' }}
+        run: |
+          set -e
+          echo "No se detectaron tests; ejecutando smoke run…"
+
+          # 1) Si existe script explícito de CI
+          if [ -f scripts/ci_smoke.py ]; then
+            echo "→ scripts/ci_smoke.py"
+            python scripts/ci_smoke.py
+            exit 0
+          fi
+
+          # 2) Buscar algo ejecutable en examples/
+          if ls examples/*.py >/dev/null 2>&1; then
+            echo "→ examples/*.py"
+            python "$(ls examples/*.py | head -n1)"
+            exit 0
+          fi
+
+          # 3) Buscar algo ejecutable en sim/
+          if ls sim/*.py >/dev/null 2>&1; then
+            echo "→ sim/*.py"
+            python "$(ls sim/*.py | head -n1)"
+            exit 0
+          fi
+
+          # 4) main.py en raíz
+          if [ -f main.py ]; then
+            echo "→ main.py"
+            python main.py
+            exit 0
+          fi
+
+          # 5) Si nada de lo anterior existe, solo listar contenido
+          echo "No se encontró script para ejecutar. Listando repo como verificación:"
+          ls -la
+
