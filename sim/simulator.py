@@ -97,6 +97,5 @@ def main(argv=None):
     print("Estado final:", estado.valor)
 
 if <tu_condición>:
-    
     do_something()
        pass
