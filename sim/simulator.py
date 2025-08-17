@@ -13,6 +13,7 @@ class Estado:
     def __repr__(self):
         return f"Estado(valor={self.valor!r})"
 
+
 def registrar_evento(msg, estado, params=None):
     t = time.time()
     payload = f" | {params}" if params else ""
@@ -120,7 +121,9 @@ def main(argv=None):
 
     print("Estado final:", estado.valor)
 
+
 # ... aquí van todas tus funciones existentes ...
+
 
 def incremento(estado, delta):
     """Incrementa el estado en delta y devuelve un nuevo objeto Estado"""
