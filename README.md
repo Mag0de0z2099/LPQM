@@ -1,10 +1,3 @@
-[![CI](https://github.com/Mag0de0z2099/LPQM/actions/workflows/ci.yml/badge.svg)](https://github.com/Mag0de0z2099/LPQM/actions/workflows/ci.yml)
-[![Quality](https://github.com/Mag0de0z2099/LPQM/actions/workflows/quality.yml/badge.svg)](https://github.com/Mag0de0z2099/LPQM/actions/workflows/quality.yml)
-[![Deploy Release](https://github.com/Mag0de0z2099/LPQM/actions/workflows/deploy.yml/badge.svg)](https://github.com/Mag0de0z2099/LPQM/actions/workflows/deploy.yml)
-[![codecov](https://codecov.io/gh/Mag0de0z2099/LPQM/branch/main/graph/badge.svg?token=TU_TOKEN)](https://codecov.io/gh/Mag0de0z2099/LPQM)
-
-
-# LPQM
 
 [![CI](https://github.com/Mag0de0z2099/LPQM/actions/workflows/ci.yml/badge.svg)](https://github.com/Mag0de0z2099/LPQM/actions/workflows/ci.yml)
 [![Deploy Release](https://github.com/Mag0de0z2099/LPQM/actions/workflows/deploy.yml/badge.svg)](https://github.com/Mag0de0z2099/LPQM/actions/workflows/deploy.yml)
