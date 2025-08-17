@@ -74,16 +74,23 @@ jobs:
           name: coverage-xml-${{ matrix.python-version }}
           path: coverage.xml
 
-      # ---------- Subir a Codecov ----------
+           # ---------- Tests + Cobertura ----------
+      - name: Pytest with coverage (XML)
+        run: pytest --maxfail=0 --cov=sim --cov-report=xml:coverage.xml --cov-report=term-missing -q || true
+
+      - name: Upload coverage.xml artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml-${{ matrix.python-version }}
+          path: coverage.xml
+
       - name: Upload to Codecov
         uses: codecov/codecov-action@v5
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}     # crea este secret en Settings > Secrets > Actions
           files: ./coverage.xml
           flags: unittests,py${{ matrix.python-version }}
           slug: Mag0de0z2099/LPQM
-          fail_ci_if_error: false                  # no bloquea si Codecov tiene intermitencias
+          fail_ci_if_error: false
           verbose: true
-          - name: Pytest with coverage (XML)
-  run: pytest --maxfail=0 --cov=sim --cov-report=xml:coverage.xml --cov-report=term-missing -q || true
-
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
