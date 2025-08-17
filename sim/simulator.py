@@ -6,9 +6,12 @@ import time
 
 
 class Estado:
-    def __init__(self):
-        self.valor = "onda"  # "onda" | "partícula"
+    def __init__(self, valor="onda"):
+        # Valor inicial configurable: "onda" | "partícula" | número
+        self.valor = valor
 
+    def __repr__(self):
+        return f"Estado(valor={self.valor!r})"
 
 def registrar_evento(msg, estado, params=None):
     t = time.time()
@@ -116,3 +119,14 @@ def main(argv=None):
         time.sleep(args.delay)
 
     print("Estado final:", estado.valor)
+
+# ... aquí van todas tus funciones existentes ...
+
+def incremento(estado, delta):
+    """Incrementa el estado en delta y devuelve un nuevo objeto Estado"""
+    try:
+        nuevo_valor = float(estado.valor) + delta
+    except ValueError:
+        # Si el estado no es numérico, lo dejamos igual
+        nuevo_valor = estado.valor
+    return Estado(nuevo_valor)
