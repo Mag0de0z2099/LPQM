@@ -7,6 +7,8 @@ on:
 jobs:
   quality:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
@@ -35,20 +37,33 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install -r requirements-dev.txt
 
-      # Formato y estilo (si quieres tolerante pon "|| true" al final)
-      - name: Black (format check)
+      # --- Formato automático ---
+      - name: Black (autoformat)
+        run: black .
+
+      - name: isort (auto order)
+        run: isort .
+
+      # --- Verificación después del autoformato ---
+      - name: Black (verify)
         run: black --check .
 
-      - name: isort (imports order)
+      - name: isort (verify)
         run: isort --check-only .
 
       - name: Flake8 (lint)
         run: flake8 .
 
-      # Tipado (opcional, pero pro)
       - name: mypy (type check)
         run: mypy .
 
-      # Tests
       - name: Pytest
         run: pytest --cov=./ --cov-report=term-missing
+
+      # --- Auto-commit de cambios de formato en main ---
+      - name: Commit formatted code
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(format): apply black + isort"
+          branch: main
