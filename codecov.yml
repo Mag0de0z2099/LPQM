@@ -2,7 +2,7 @@ coverage:
   status:
     project:
       default:
-        target: 60%    # umbral inicial; súbelo cuando tengas más tests
-        threshold: 2%  # tolerancia de fluctuación
+        target: 60%
+        threshold: 2%
 ignore:
   - "examples/**"
