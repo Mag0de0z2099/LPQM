@@ -84,3 +84,6 @@ jobs:
           slug: Mag0de0z2099/LPQM
           fail_ci_if_error: false                  # no bloquea si Codecov tiene intermitencias
           verbose: true
+          - name: Pytest with coverage (XML)
+  run: pytest --maxfail=0 --cov=sim --cov-report=xml:coverage.xml --cov-report=term-missing -q || true
+
