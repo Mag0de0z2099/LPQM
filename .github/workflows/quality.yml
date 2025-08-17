@@ -44,6 +44,14 @@ jobs:
       - name: isort (auto order)
         run: isort .
 
+      # --- Guardar el formato en main de inmediato ---
+      - name: Commit formatted code
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(format): apply black + isort"
+          branch: main
+
       # --- Verificación después del autoformato ---
       - name: Black (verify)
         run: black --check .
@@ -59,11 +67,3 @@ jobs:
 
       - name: Pytest
         run: pytest --cov=./ --cov-report=term-missing
-
-      # --- Auto-commit de cambios de formato en main ---
-      - name: Commit formatted code
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore(format): apply black + isort"
-          branch: main
