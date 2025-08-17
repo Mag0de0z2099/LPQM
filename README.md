@@ -2,6 +2,8 @@
 
 ![Deploy Release](https://github.com/Mag0de0z2099/LPQM/actions/workflows/deploy.yml/badge.svg?branch=main)
 
+![Quality](https://github.com/Mag0de0z2099/LPQM/actions/workflows/quality.yml/badge.svg?branch=main)
+
 # LPQM
 LPQM — Lenguaje de Proyección Cuántica Multidireccional Prototipo de un lenguaje experimental inspirado en la mecánica cuántica.
 # LPQM — Lenguaje de Proyección Cuántica Multidireccional (prototipo)
