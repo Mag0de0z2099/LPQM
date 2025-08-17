@@ -1,7 +1,5 @@
 ![CI](https://github.com/Mag0de0z2099/LPQM/actions/workflows/ci.yml/badge.svg)
 
-![Deploy Release](https://github.com/<TU_USER>/<TU_REPO>/actions/workflows/deploy.yml/badge.svg?branch=main)
-
 ![Deploy Release](https://github.com/Mag0de0z2099/LPQM/actions/workflows/deploy.yml/badge.svg?branch=main)
 
 # LPQM
