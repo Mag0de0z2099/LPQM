@@ -95,7 +95,3 @@ def main(argv=None):
         time.sleep(args.delay)
 
     print("Estado final:", estado.valor)
-
-if <tu_condición>:
-    do_something()
-       pass
