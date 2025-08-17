@@ -1,6 +1,9 @@
-
-
 # LPQM
+
+[![CI](https://github.com/Mag0de0z2099/LPQM/actions/workflows/ci.yml/badge.svg)](https://github.com/Mag0de0z2099/LPQM/actions/workflows/ci.yml)
+[![Deploy Release](https://github.com/Mag0de0z2099/LPQM/actions/workflows/deploy.yml/badge.svg)](https://github.com/Mag0de0z2099/LPQM/actions/workflows/deploy.yml)
+[![Quality](https://github.com/Mag0de0z2099/LPQM/actions/workflows/quality.yml/badge.svg)](https://github.com/Mag0de0z2099/LPQM/actions/workflows/quality.yml)
+
 LPQM — Lenguaje de Proyección Cuántica Multidireccional...
 
 
