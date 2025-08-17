@@ -96,6 +96,7 @@ def main(argv=None):
 
     print("Estado final:", estado.valor)
 
-    if __name__ == "__main__":
-    sys.exit(main())
-
+if <tu_condición>:
+    
+    do_something()
+       pass
