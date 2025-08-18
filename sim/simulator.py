@@ -25,18 +25,18 @@ def clamp01(x):
 
 
 def op_P(estado, prob, ruido, entorno):
-    p = prob + entorno["impacto"] - ruido["amortiguación"]
+    p = prob + entorno["impacto"] - ruido["amortiguacion"]
     if random.random() < clamp01(p):
-        estado.valor = "partícula"
-        registrar_evento("Colapso a partícula (→P)", estado, {"p": round(p, 3)})
+        estado.valor = "particula"
+        registrar_evento("Colapso a particula (→P)", estado, {"p": round(p, 3)})
     return estado.valor
 
 
 def op_W(estado, prob, ruido, entorno):
-    p = prob + ruido["estímulo"] - entorno["restricción"]
+    p = prob + ruido["estimulo"] - entorno["restriccion"]
     if random.random() < clamp01(p):
         estado.valor = "onda"
-        registrar_evento("Dispersión a onda (→W)", estado, {"p": round(p, 3)})
+        registrar_evento("Dispersion a onda (→W)", estado, {"p": round(p, 3)})
     return estado.valor
 
 
@@ -63,19 +63,19 @@ def render_ascii(estado, width=40):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(description="LPQM simulator v0.2.0 (ondas ↔ partículas)")
-    ap.add_argument("--cycles", type=int, default=20, help="Número de ciclos de simulación")
+    ap = argparse.ArgumentParser(description="LPQM simulator v0.2.0 (ondas ↔ particulas)")
+    ap.add_argument("--cycles", type=int, default=20, help="Número de ciclos de simulacion")
     ap.add_argument("--delay", type=float, default=0.2, help="Segundos entre ciclos")
     ap.add_argument("--probP", type=float, default=0.5, help="Probabilidad base →P (colapso)")
     ap.add_argument("--probW", type=float, default=0.6, help="Probabilidad base →W (dispersión)")
     ap.add_argument("--impacto", type=float, default=0.10, help="Entorno.impacto (favorece →P)")
     ap.add_argument(
-        "--restriccion", type=float, default=0.30, help="Entorno.restricción (dificulta →W)"
+        "--restriccion", type=float, default=0.30, help="Entorno.restriccion (dificulta →W)"
     )
     ap.add_argument(
-        "--amortiguacion", type=float, default=0.40, help="Ruido.amortiguación (frena →P)"
+        "--amortiguacion", type=float, default=0.40, help="Ruido.amortiguacion (frena →P)"
     )
-    ap.add_argument("--estimulo", type=float, default=0.20, help="Ruido.estímulo (favorece →W)")
+    ap.add_argument("--estimulo", type=float, default=0.20, help="Ruido.estimulo (favorece →W)")
     ap.add_argument("--temp-start", type=float, default=0.2, help="Temperatura inicial [0..1]")
     ap.add_argument(
         "--temp-step", type=float, default=0.03, help="Incremento de temperatura por ciclo"
@@ -88,8 +88,8 @@ def main(argv=None):
     args = ap.parse_args(argv)
 
     estado = Estado()
-    entorno = {"impacto": args.impacto, "restricción": args.restriccion}
-    ruido = {"amortiguación": args.amortiguacion, "estímulo": args.estimulo}
+    entorno = {"impacto": args.impacto, "restriccion": args.restriccion}
+    ruido = {"amortiguacion": args.amortiguacion, "estimulo": args.estimulo}
 
     temperatura = args.temp_start
 
