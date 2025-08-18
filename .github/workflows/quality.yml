@@ -2,30 +2,30 @@ name: Quality
 
 on:
   push:
+    branches: [ "main" ]
   pull_request:
+    branches: [ "main" ]
 
 jobs:
   quality:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
         python-version: ["3.10", "3.11"]
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Cache pip
-        uses: actions/cache@v4
+        uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
@@ -44,6 +44,8 @@ jobs:
 
       # ---- Tests + Cobertura ----
       - name: Run tests with coverage (XML)
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           pytest --maxfail=0 --cov=sim --cov-report=xml:coverage.xml --cov-report=term-missing -q
 
@@ -62,4 +64,3 @@ jobs:
           flags: unittests,py${{ matrix.python-version }}
           slug: Mag0de0z2099/LPQM
           fail_ci_if_error: false
-          verbose: true
