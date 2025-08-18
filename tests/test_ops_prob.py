@@ -4,11 +4,9 @@ import sim.simulator as sim
 class DummyEstado(sim.Estado):
     pass
 
-
-def dummy_evento(estado, ctx):
+def dummy_evento(estado, ctx=None, *_, **__):
     # marca que la rama se ejecutó
     return sim.Estado(getattr(estado, "valor", 0) + 1)
-
 
 def test_op_P_dispara_con_random_bajo(monkeypatch):
     # Forzamos random.random() a 0.0 => siempre < prob y dispara
