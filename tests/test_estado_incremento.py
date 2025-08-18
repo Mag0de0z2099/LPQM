@@ -1,12 +1,15 @@
 import sim.simulator as sim
 
+
 def test_estado_inicial_por_defecto():
     e = sim.Estado()
     assert hasattr(e, "valor")
 
+
 def test_estado_inicial_con_valor():
     e = sim.Estado(10)
     assert e.valor == 10
+
 
 def test_incremento_devuelve_nuevo_estado():
     e1 = sim.Estado(5)
