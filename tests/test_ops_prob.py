@@ -26,7 +26,7 @@ def test_op_P_dispara_con_random_bajo(monkeypatch):
 
     e0 = DummyEstado(0)
     ruido = {"impacto": 0.0}
-    entorno = {"amortiguación": 0.0, "impacto": 0.0, "estímulo": 0.0}
+    entorno = {"amortiguacion": 0.0, "impacto": 0.0, "estimulo": 0.0}
     ctx = {"estímulo": 0.0}
 
     #              estado,   evento,        probP, ruido, entorno,  boost, ctx
@@ -40,7 +40,7 @@ def test_op_P_no_dispara_con_random_alto(monkeypatch):
 
     e0 = DummyEstado(0)
     ruido = {"impacto": 0.0}
-    entorno = {"amortiguación": 0.0, "impacto": 0.0, "estímulo": 0.0}
+    entorno = {"amortiguacion": 0.0, "impacto": 0.0, "estimulo": 0.0}
     ctx = {"estímulo": 0.0}
 
     e1 = sim.op_P_evento(e0, EventoSumar(), 0.0, ruido, entorno, 0.0, ctx)
@@ -53,7 +53,7 @@ def test_op_W_dispara_con_random_bajo(monkeypatch):
 
     e0 = DummyEstado(0)
     ruido = {"impacto": 0.0}
-    entorno = {"amortiguación": 0.0, "impacto": 0.0, "estímulo": 0.0}
+    entorno = {"amortiguacion": 0.0, "impacto": 0.0, "estimulo": 0.0}
     ctx = {"estímulo": 0.0}
 
     #              estado,   evento,        probW, ruido, entorno,  boost, ctx
