@@ -1,4 +1,4 @@
-import sim.simulator as sim
+from sim.simulator import EventoSumar
 
 class DummyEstado(sim.Estado):
     """Estado mínimo para pruebas (hereda de sim.Estado)."""
@@ -6,10 +6,10 @@ class DummyEstado(sim.Estado):
 
 class EventoSumar:
     """Callback de evento: suma 1 al valor del estado y devuelve un nuevo Estado.
-    Acepta *args/**kwargs para tolerar ctx u otros parámetros sin fallar.
-    """
-    def __call__(self, estado, *_, **__):
+       Acepta *args/**kwargs para tolerar ctx u otros parámetros sin fallar."""
+    def __call__(self, estado, *_args, **_kwargs):
         return sim.Estado(getattr(estado, "valor", 0) + 1)
+
 
 
 def test_op_P_dispara_con_random_bajo(monkeypatch):
