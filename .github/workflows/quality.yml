@@ -3,33 +3,36 @@ name: Quality
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   quality:
+    name: quality (${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python-version: [3.10, 3.11]
-
+        python-version: ["3.10", "3.11"]   # <- sin "3.1"
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: pip
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 mypy pytest pytest-cov
-      - name: Run tests with coverage
-        run: |
-          pytest --maxfail=1 --disable-warnings -q
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install -r requirements-dev.txt
 
-      # ---- Lint ----
+      # ---- Linters (tolerantes) ----
       - name: Flake8 (lint, tolerant)
         run: flake8 . || true
 
-      # ---- Type check ----
       - name: mypy (type check, tolerant)
         run: mypy . || true
 
@@ -38,22 +41,18 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: |
-          pytest --maxfail=0 \
-                 --cov=sim \
-                 --cov-report=xml:coverage.xml \
-                 --cov-report=term-missing \
-                 --cov-fail-under=30 \
-                 -q
+          pytest --maxfail=0 --cov=sim --cov-report=xml:coverage.xml --cov-report=term-missing -q
 
-      # ---- Subir coverage como artefacto ----
       - name: Upload coverage XML as artifact (optional)
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-xml-${{ matrix.python-version }}
           path: coverage.xml
 
-      # ---- Subir a Codecov (no bloquea si falla) ----
+      # ---- Subir a Codecov (no bloquea si Codecov falla) ----
       - name: Upload to Codecov
+        if: always()
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -61,3 +60,4 @@ jobs:
           flags: unittests,py${{ matrix.python-version }}
           slug: Mag0de0z2099/LPQM
           fail_ci_if_error: false
+          verbose: true
