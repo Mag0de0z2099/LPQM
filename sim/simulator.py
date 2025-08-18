@@ -4,6 +4,21 @@ import random
 import sys
 import time
 
+# --- normalizador de claves para tolerar acentos / variantes ---
+def _norm_dict(d):
+    if d is None:
+        return {"impacto": 0.0, "amortiguacion": 0.0}
+    return {
+        "impacto": d.get("impacto", d.get("impact", 0.0)),
+        "amortiguacion": d.get("amortiguacion", d.get("amortiguación", d.get("damping", 0.0))),
+    }
+
+def _norm_ctx(ctx):
+    if ctx is None:
+        return {"estimulo": 0.0}
+    return {
+        "estimulo": ctx.get("estimulo", ctx.get("estímulo", ctx.get("stimulus", 0.0))),
+    }
 
 class Estado:
     def __init__(self, valor="onda"):
