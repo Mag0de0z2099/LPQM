@@ -56,16 +56,40 @@ def op_W(estado, prob, ruido, entorno):
 
 
 # --- v0.2.0: colapso/dispersion condicionados por evento ---
-def op_P_evento(estado, cond, prob_base, ruido, entorno, boost=0.2, ctx=None):
-    """Colapso a partícula si se cumple un evento (condición) con refuerzo de probabilidad."""
-    prob = prob_base + (boost if cond(ctx or {}) else 0.0)
-    return op_P(estado, prob, ruido, entorno)
+def op_P_evento(estado, evento, probP, ruido, entorno, boost, ctx):
+    # Normalizar claves para evitar errores por acentos / variantes
+    entorno = _norm_dict(entorno)
+    ctx = _norm_ctx(ctx)
 
+    # Ruido + contexto
+    ruido_val = ruido.get("impacto", 0.0)
+    estimulo_val = ctx.get("estimulo", 0.0)
+    amortiguacion_val = entorno.get("amortiguacion", 0.0)
 
-def op_W_evento(estado, cond, prob_base, ruido, entorno, boost=0.2, ctx=None):
-    """Dispersión a onda si se cumple un evento (condición) con refuerzo de probabilidad."""
-    prob = prob_base + (boost if cond(ctx or {}) else 0.0)
-    return op_W(estado, prob, ruido, entorno)
+    # Probabilidad ajustada
+    prob_total = probP + ruido_val + estimulo_val - amortiguacion_val + boost
+    if random.random() < prob_total:
+        return EventoSumar(), 1
+    return EventoSumar(), 0
+
+def op_W_evento(estado, evento, probW, ruido, entorno, boost, ctx):
+    # Normalizar claves para tolerar acentos / variantes
+    entorno = _norm_dict(entorno)
+    ctx = _norm_ctx(ctx)
+
+    # Ruido + contexto (usando SIEMPRE claves sin acento)
+    ruido_val = ruido.get("impacto", 0.0)
+    estimulo_val = ctx.get("estimulo", 0.0)
+    amortiguacion_val = entorno.get("amortiguacion", 0.0)
+
+    # Probabilidad ajustada
+    prob_total = probW + ruido_val + estimulo_val - amortiguacion_val + boost
+
+    # “W” (dispersión): resta 1 si dispara
+    if random.random() < prob_total:
+        return EventoSumar(), -1
+    return EventoSumar(), 0
+
 
 
 # --- v0.2.0: visualización ASCII simple ---
