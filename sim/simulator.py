@@ -10,14 +10,14 @@ def _norm_dict(d):
         return {"impacto": 0.0, "amortiguacion": 0.0}
     return {
         "impacto": d.get("impacto", d.get("impact", 0.0)),
-        "amortiguacion": d.get("amortiguacion", d.get("amortiguación", d.get("damping", 0.0))),
+        "amortiguacion": d.get("amortiguacion", d.get("amortiguacion", d.get("damping", 0.0))),
     }
 
 def _norm_ctx(ctx):
     if ctx is None:
         return {"estimulo": 0.0}
     return {
-        "estimulo": ctx.get("estimulo", ctx.get("estímulo", ctx.get("stimulus", 0.0))),
+        "estimulo": ctx.get("estimulo", ctx.get("estimulo", ctx.get("stimulus", 0.0))),
     }
 
 class Estado:
@@ -106,7 +106,7 @@ def main(argv=None):
     ap.add_argument("--cycles", type=int, default=20, help="Número de ciclos de simulacion")
     ap.add_argument("--delay", type=float, default=0.2, help="Segundos entre ciclos")
     ap.add_argument("--probP", type=float, default=0.5, help="Probabilidad base →P (colapso)")
-    ap.add_argument("--probW", type=float, default=0.6, help="Probabilidad base →W (dispersión)")
+    ap.add_argument("--probW", type=float, default=0.6, help="Probabilidad base →W (dispersion)")
     ap.add_argument("--impacto", type=float, default=0.10, help="Entorno.impacto (favorece →P)")
     ap.add_argument(
         "--restriccion", type=float, default=0.30, help="Entorno.restriccion (dificulta →W)"
