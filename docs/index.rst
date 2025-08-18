@@ -1,6 +1,8 @@
-Welcome to LPQM Simulator's documentation!
-==========================================
+LPQM — Lenguaje de Proyección Cuántica Multidireccional
+=======================================================
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Contenido:
+
+   # agrega aquí otros .rst cuando los vayas creando
