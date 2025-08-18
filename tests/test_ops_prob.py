@@ -1,9 +1,3 @@
-# tests/test_ops_prob.py
-# Pruebas básicas para op_P_evento y op_W_evento
-# - Forzamos random.random() para controlar el disparo
-# - Usamos un callback tolerante (EventoSumar) que acepta args extra (ej. ctx)
-# - Pasamos diccionarios "ricos" para evitar KeyError en claves esperadas
-
 import sim.simulator as sim
 
 
@@ -14,6 +8,7 @@ class DummyEstado(sim.Estado):
 
 class EventoSumar:
     """Callback de evento: suma 1 al valor del estado y devuelve un nuevo Estado.
+
     Acepta *args/**kwargs para ser tolerante si el motor llama con ctx u otros.
     """
     def __call__(self, estado, *_, **__):
@@ -21,41 +16,40 @@ class EventoSumar:
 
 
 def test_op_P_dispara_con_random_bajo(monkeypatch):
-    # Fuerza random.random() = 0.0 → siempre < prob → dispara
+    # Forzamos random.random() a 0.0 => siempre < prob y dispara
     monkeypatch.setattr(sim.random, "random", lambda: 0.0)
 
     e0 = DummyEstado(0)
     ruido = {"impacto": 0.0}
-    entorno = {"amortiguacion": 0.0, "impacto": 0.0, "estimulo": 0.0}
-    ctx = {"estímulo": 0.0}
+    entorno = {"amortiguacion": 0.0}
+    ctx = {"estimulo": 0.0}
 
-    #              estado,   evento,        probP, ruido, entorno,  boost, ctx
-    e1 = sim.op_P_evento(e0, EventoSumar(), 1.0,   ruido,  entorno,  0.0,   ctx)
+    #       estado, evento,      probP, ruido, entorno, boost, ctx
+    e1 = sim.op_P_evento(e0, EventoSumar(), 1.0,  ruido,  entorno,  0.0,   ctx)
     assert e1.valor == 1
 
 
 def test_op_P_no_dispara_con_random_alto(monkeypatch):
-    # Fuerza random.random() = 1.0 → siempre >= prob → NO dispara
+    # Fuerza random.random() = 1.0 => siempre >= prob => NO dispara
     monkeypatch.setattr(sim.random, "random", lambda: 1.0)
 
     e0 = DummyEstado(0)
     ruido = {"impacto": 0.0}
-    entorno = {"amortiguacion": 0.0, "impacto": 0.0, "estimulo": 0.0}
-    ctx = {"estímulo": 0.0}
+    entorno = {"amortiguacion": 0.0}
+    ctx = {"estimulo": 0.0}
 
     e1 = sim.op_P_evento(e0, EventoSumar(), 0.0, ruido, entorno, 0.0, ctx)
     assert e1.valor == 0
 
 
 def test_op_W_dispara_con_random_bajo(monkeypatch):
-    # Fuerza random.random() = 0.0 → dispara rama W
+    # Fuerza random.random() = 0.0 => dispara rama W
     monkeypatch.setattr(sim.random, "random", lambda: 0.0)
 
     e0 = DummyEstado(0)
     ruido = {"impacto": 0.0}
-    entorno = {"amortiguacion": 0.0, "impacto": 0.0, "estimulo": 0.0}
-    ctx = {"estímulo": 0.0}
+    entorno = {"amortiguacion": 0.0}
+    ctx = {"estimulo": 0.0}
 
-    #              estado,   evento,        probW, ruido, entorno,  boost, ctx
-    e1 = sim.op_W_evento(e0, EventoSumar(), 1.0,   ruido,  entorno,  0.0,   ctx)
+    e1 = sim.op_W_evento(e0, EventoSumar(), 1.0, ruido, entorno, 0.0, ctx)
     assert e1.valor == 1
