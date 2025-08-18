@@ -10,15 +10,19 @@ def _norm_dict(d):
         return {"impacto": 0.0, "amortiguacion": 0.0}
     return {
         "impacto": d.get("impacto", d.get("impact", 0.0)),
-        "amortiguacion": d.get("amortiguacion", d.get("amortiguacion", d.get("damping", 0.0))),
+        # si viene "damping" lo aceptamos como amortiguación
+        "amortiguacion": d.get("amortiguacion", d.get("damping", 0.0)),
     }
+
 
 def _norm_ctx(ctx):
     if ctx is None:
         return {"estimulo": 0.0}
     return {
-        "estimulo": ctx.get("estimulo", ctx.get("estimulo", ctx.get("stimulus", 0.0))),
+        # aceptamos "stimulus" como equivalente
+        "estimulo": ctx.get("estimulo", ctx.get("stimulus", 0.0)),
     }
+
 
 class Estado:
     def __init__(self, valor="onda"):
@@ -48,7 +52,8 @@ def op_P(estado, prob, ruido, entorno):
 
 
 def op_W(estado, prob, ruido, entorno):
-    p = prob + ruido["estimulo"] - entorno["restriccion"]
+    # Nota: esta función base no se usa en los tests de prob, la dejo por compatibilidad
+    p = prob + ruido.get("estimulo", 0.0) - entorno.get("restriccion", 0.0)
     if random.random() < clamp01(p):
         estado.valor = "onda"
         registrar_evento("Dispersion a onda (→W)", estado, {"p": round(p, 3)})
@@ -56,40 +61,42 @@ def op_W(estado, prob, ruido, entorno):
 
 
 # --- v0.2.0: colapso/dispersion condicionados por evento ---
+def _prob_ajustada(base, ruido, entorno, boost, ctx):
+    """Calcula probabilidad ajustada y la recorta a [0, 1]."""
+    entorno_n = _norm_dict(entorno)
+    ctx_n = _norm_ctx(ctx)
+    ruido_val = float(ruido.get("impacto", 0.0))
+    amortiguacion_val = float(entorno_n.get("amortiguacion", 0.0))
+    estimulo_val = float(ctx_n.get("estimulo", 0.0))
+    return clamp01(float(base) + ruido_val + estimulo_val - amortiguacion_val + float(boost))
+
+
 def op_P_evento(estado, evento, probP, ruido, entorno, boost, ctx):
-    # Normalizar claves para evitar errores por acentos / variantes
-    entorno = _norm_dict(entorno)
-    ctx = _norm_ctx(ctx)
-
-    # Ruido + contexto
-    ruido_val = ruido.get("impacto", 0.0)
-    estimulo_val = ctx.get("estimulo", 0.0)
-    amortiguacion_val = entorno.get("amortiguacion", 0.0)
-
-    # Probabilidad ajustada
-    prob_total = probP + ruido_val + estimulo_val - amortiguacion_val + boost
+    """
+    Si random < prob_total, dispara el callback `evento` y devuelve el nuevo Estado.
+    En caso contrario, devuelve `estado` sin cambios.
+    """
+    prob_total = _prob_ajustada(probP, ruido, entorno, boost, ctx)
     if random.random() < prob_total:
-        return EventoSumar(), 1
-    return EventoSumar(), 0
+        # El callback tolera kwargs extra (p.ej. ctx), ver tests
+        nuevo_estado = evento(estado, ctx=ctx)
+        if isinstance(nuevo_estado, Estado):
+            registrar_evento("Evento →P", nuevo_estado, {"p": round(prob_total, 3)})
+            return nuevo_estado
+    return estado
+
 
 def op_W_evento(estado, evento, probW, ruido, entorno, boost, ctx):
-    # Normalizar claves para tolerar acentos / variantes
-    entorno = _norm_dict(entorno)
-    ctx = _norm_ctx(ctx)
-
-    # Ruido + contexto (usando SIEMPRE claves sin acento)
-    ruido_val = ruido.get("impacto", 0.0)
-    estimulo_val = ctx.get("estimulo", 0.0)
-    amortiguacion_val = entorno.get("amortiguacion", 0.0)
-
-    # Probabilidad ajustada
-    prob_total = probW + ruido_val + estimulo_val - amortiguacion_val + boost
-
-    # “W” (dispersión): resta 1 si dispara
+    """
+    Versión análoga para “W”. Si dispara, ejecuta `evento` y devuelve el Estado resultante.
+    """
+    prob_total = _prob_ajustada(probW, ruido, entorno, boost, ctx)
     if random.random() < prob_total:
-        return EventoSumar(), -1
-    return EventoSumar(), 0
-
+        nuevo_estado = evento(estado, ctx=ctx)
+        if isinstance(nuevo_estado, Estado):
+            registrar_evento("Evento →W", nuevo_estado, {"p": round(prob_total, 3)})
+            return nuevo_estado
+    return estado
 
 
 # --- v0.2.0: visualización ASCII simple ---
@@ -133,10 +140,10 @@ def main(argv=None):
     temperatura = args.temp_start
 
     # Eventos de ejemplo (puedes cambiarlos):
-    def evento_colapso(ctx):  # dispare →P si temperatura > 0.65
+    def evento_colapso(ctx):  # dispara →P si temperatura > 0.65
         return ctx.get("temp", 0.0) > 0.65
 
-    def evento_dispersion(ctx):  # dispare →W si temperatura < 0.35
+    def evento_dispersion(ctx):  # dispara →W si temperatura < 0.35
         return ctx.get("temp", 0.0) < 0.35
 
     print("Estado inicial:", estado.valor)
@@ -161,11 +168,11 @@ def main(argv=None):
     print("Estado final:", estado.valor)
 
 
-# ... aquí van todas tus funciones existentes ...
+# ... aquí pueden ir más funciones del simulador ...
 
 
 def incremento(estado, delta):
-    """Incrementa el estado en delta y devuelve un nuevo objeto Estado"""
+    """Incrementa el estado en delta y devuelve un nuevo objeto Estado."""
     try:
         nuevo_valor = float(estado.valor) + delta
     except ValueError:
